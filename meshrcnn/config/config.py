@@ -79,6 +79,7 @@ def get_meshrcnn_cfg_defaults(cfg):
     cfg.MODEL.ROI_MESH_HEAD.CHAMFER_LOSS_WEIGHT = 1.0
     cfg.MODEL.ROI_MESH_HEAD.NORMALS_LOSS_WEIGHT = 1.0
     cfg.MODEL.ROI_MESH_HEAD.EDGE_LOSS_WEIGHT = 1.0
+    cfg.MODEL.ROI_MESH_HEAD.LAPLACIAN_LOSS_WEIGHT = 1.0
     # coord thresh
     cfg.MODEL.ROI_MESH_HEAD.GT_COORD_THRESH = 0.0
     # Init ico_sphere level (only for when voxel_on is false)
