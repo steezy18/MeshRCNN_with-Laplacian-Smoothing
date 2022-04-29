@@ -110,6 +110,7 @@ class MeshRCNNROIHeads(StandardROIHeads):
         self.chamfer_loss_weight = cfg.MODEL.ROI_MESH_HEAD.CHAMFER_LOSS_WEIGHT
         self.normals_loss_weight = cfg.MODEL.ROI_MESH_HEAD.NORMALS_LOSS_WEIGHT
         self.edge_loss_weight = cfg.MODEL.ROI_MESH_HEAD.EDGE_LOSS_WEIGHT
+        self.laplacian_loss_weight = cfg.MODEL.ROI_MESH.LAPLACIAN_LOSS_WEIGHT
         self.gt_num_samples = cfg.MODEL.ROI_MESH_HEAD.GT_NUM_SAMPLES
         self.pred_num_samples = cfg.MODEL.ROI_MESH_HEAD.PRED_NUM_SAMPLES
         self.gt_coord_thresh = cfg.MODEL.ROI_MESH_HEAD.GT_COORD_THRESH
@@ -304,10 +305,11 @@ class MeshRCNNROIHeads(StandardROIHeads):
                     "chamfer": self.chamfer_loss_weight,
                     "normals": self.normals_loss_weight,
                     "edge": self.edge_loss_weight,
+                    "laplacian": self.laplacian_loss_weight,
                 }
 
                 if not pred_meshes[0].isempty():
-                    loss_chamfer, loss_normals, loss_edge, target_meshes = mesh_rcnn_loss(
+                    loss_chamfer, loss_normals, loss_edge, loss_laplacian, target_meshes = mesh_rcnn_loss(
                         pred_meshes,
                         proposals,
                         loss_weights=loss_weights,
@@ -322,12 +324,14 @@ class MeshRCNNROIHeads(StandardROIHeads):
                     loss_chamfer = sum(k.sum() for k in self.mesh_head.parameters()) * 0.0
                     loss_normals = sum(k.sum() for k in self.mesh_head.parameters()) * 0.0
                     loss_edge = sum(k.sum() for k in self.mesh_head.parameters()) * 0.0
+                    loss_laplacian = sum(k.sum() for k in self.mesh_head.parameters()) * 0.0
 
                 losses.update(
                     {
                         "loss_chamfer": loss_chamfer,
                         "loss_normals": loss_normals,
                         "loss_edge": loss_edge,
+                        "loss_laplacian": loss_laplacian,
                     }
                 )
 
