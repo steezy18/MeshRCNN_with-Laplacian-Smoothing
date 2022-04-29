@@ -4,7 +4,7 @@ import fvcore.nn.weight_init as weight_init
 import torch
 from detectron2.layers import ShapeSpec, cat
 from detectron2.utils.registry import Registry
-from pytorch3d.loss import chamfer_distance, mesh_edge_loss
+from pytorch3d.loss import chamfer_distance, mesh_edge_loss, mesh_laplacian_smoothing
 from pytorch3d.ops import GraphConv, SubdivideMeshes, sample_points_from_meshes, vert_align
 from pytorch3d.structures import Meshes
 from torch import nn
@@ -35,7 +35,7 @@ def mesh_rcnn_loss(
             The ground-truth labels (class, box, mask, ...) associated with each instance
             are stored in fields.
         loss_weights (dict): Contains the weights for the different losses, e.g.
-            loss_weights = {'champfer': 1.0, 'normals': 0.0, 'edge': 0.2}
+            loss_weights = {'champfer': 1.0, 'normals': 0.0, 'edge': 0.2, 'laplacian': 0.5}
         gt_num_samples (int): The number of points to sample from gt meshes
         pred_num_samples (int): The number of points to sample from predicted meshes
         gt_coord_thresh (float): A threshold value over which the batch is ignored
@@ -69,6 +69,7 @@ def mesh_rcnn_loss(
     all_loss_chamfer = []
     all_loss_normals = []
     all_loss_edge = []
+    all_loss_laplacian = [] #Laplacian smoothing
     for pred_mesh in pred_meshes:
         pred_sampled_verts, pred_sampled_normals = sample_points_from_meshes(
             pred_mesh, num_samples=pred_num_samples, return_normals=True
@@ -93,10 +94,13 @@ def mesh_rcnn_loss(
         loss_edge = mesh_edge_loss(pred_mesh)
         loss_edge = loss_edge * loss_weights["edge"]
         all_loss_edge.append(loss_edge)
+        loss_laplacian = mesh_laplacian_smoothing(pred_mesh, method="uniform")
+        all_loss_laplacian.append(loss_laplacian)
 
     loss_chamfer = sum(all_loss_chamfer)
     loss_normals = sum(all_loss_normals)
     loss_edge = sum(all_loss_edge)
+    loss_laplacian = sum(all_loss_laplacian)
 
     # if the rois are bad, the target verts can be arbitrarily large
     # causing exploding gradients. If this is the case, ignore the batch
@@ -104,8 +108,9 @@ def mesh_rcnn_loss(
         loss_chamfer = loss_chamfer * 0.0
         loss_normals = loss_normals * 0.0
         loss_edge = loss_edge * 0.0
+        loss_laplacian = loss_laplacian * 0.0
 
-    return loss_chamfer, loss_normals, loss_edge, gt_meshes
+    return loss_chamfer, loss_normals, loss_edge, loss_laplacian, gt_meshes
 
 
 def mesh_rcnn_inference(pred_meshes, pred_instances):
