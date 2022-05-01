@@ -110,7 +110,7 @@ class MeshRCNNROIHeads(StandardROIHeads):
         self.chamfer_loss_weight = cfg.MODEL.ROI_MESH_HEAD.CHAMFER_LOSS_WEIGHT
         self.normals_loss_weight = cfg.MODEL.ROI_MESH_HEAD.NORMALS_LOSS_WEIGHT
         self.edge_loss_weight = cfg.MODEL.ROI_MESH_HEAD.EDGE_LOSS_WEIGHT
-        self.laplacian_loss_weight = cfg.MODEL.ROI_MESH.LAPLACIAN_LOSS_WEIGHT
+        self.laplacian_loss_weight = cfg.MODEL.ROI_MESH_HEAD.LAPLACIAN_LOSS_WEIGHT
         self.gt_num_samples = cfg.MODEL.ROI_MESH_HEAD.GT_NUM_SAMPLES
         self.pred_num_samples = cfg.MODEL.ROI_MESH_HEAD.PRED_NUM_SAMPLES
         self.gt_coord_thresh = cfg.MODEL.ROI_MESH_HEAD.GT_COORD_THRESH
