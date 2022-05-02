@@ -94,7 +94,7 @@ def mesh_rcnn_loss(
         loss_edge = mesh_edge_loss(pred_mesh)
         loss_edge = loss_edge * loss_weights["edge"]
         all_loss_edge.append(loss_edge)
-        loss_laplacian = mesh_laplacian_smoothing(pred_mesh, method="uniform")
+        loss_laplacian = mesh_laplacian_smoothing(pred_mesh, method="cot")
         all_loss_laplacian.append(loss_laplacian)
 
     loss_chamfer = sum(all_loss_chamfer)
