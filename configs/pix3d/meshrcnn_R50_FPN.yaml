@@ -54,7 +54,7 @@ DATASETS:
   TRAIN: ("pix3d_s1_train",)
   TEST: ("pix3d_s1_test",)
 SOLVER:
-  BASE_LR: 0.02
+  BASE_LR: 0.005
   WEIGHT_DECAY: 0.0001
   STEPS: (800, 1000)
   MAX_ITER: 1100
